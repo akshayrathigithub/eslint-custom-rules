@@ -34,9 +34,8 @@ jobs:
           files: |
             .(js|json|jsx|ts|tsx)$
 
-      - name: Get branch names
-        id: branch-name
-        uses: tj-actions/branch-names@v5
+      - name: Setup eslint
+        run: npm install -g eslint@8.49.0
 
       - name: ESLint PR Check
         run: |
