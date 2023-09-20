@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-function CurrentBalance () {
-  const currency = 'MYR'
+function CurrentBalance() {
+  const currency = 'MYR';
   return (
     <div className="balances-container">
       <div className="bal-cont-header">
@@ -15,7 +15,7 @@ function CurrentBalance () {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default CurrentBalance
+export default CurrentBalance;

@@ -1,5 +1,5 @@
 import React from 'react'
-import Amount from 'common/ui/Amount'
+import Amount from 'common/ui/Amount';
 
 function CurrentBalance () {
   const balance = 40
