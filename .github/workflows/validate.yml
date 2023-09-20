@@ -37,7 +37,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci --unsafe-perm --prefer-offline
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
+          TOKEN: ${{ secrets.TOKEN }}
 
       - name: ESLint PR Check
         run: |
