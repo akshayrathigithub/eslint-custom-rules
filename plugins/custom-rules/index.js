@@ -1,7 +1,6 @@
-const noCurrencyhardCoding = require('./no-currency-hardcoding')
-
 module.exports = {
   rules: {
-    'no-currency-hardcoding': noCurrencyhardCoding
+    'no-currency-hardcoding': require('./no-currency-hardcoding'),
+    'no-currency-comparision': require('./no-currency-comparision')
   }
 }
