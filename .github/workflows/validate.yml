@@ -18,8 +18,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18.12.1
-          
-      - name: Validate
-        # Automatically installs npm ci in web too
+
+      - name: ESLint PR Check
         run: |
-          npm run lint
+          echo 'PR Branch: ${{ steps.branch-name.outputs.current_branch }}'
+          npx eslint \
+          --output-file eslint_report.json \
+          --no-error-on-unmatched-pattern \
+          --format json \
+          ${{ steps.changed-files.outputs.all_modified_files }}
+        continue-on-error: true
+
+      - name: Annotate ES lint issues
+        uses: ataylorme/eslint-annotate-action@v2
+        id: eslint-annotator
+        with:
+          report-json: "eslint_report.json"
+          check-name: "Eslint Report"
