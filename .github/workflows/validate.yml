@@ -37,7 +37,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
         env:
-          TOKEN: ${{ github.GITHUB_TOKEN }}
+          TOKEN: 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
 
       - name: ESLint PR Check
         run: |
