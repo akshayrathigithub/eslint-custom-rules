@@ -29,10 +29,12 @@ jobs:
           files: |
             .(js|json|jsx|ts|tsx)$
 
-      - name: Dependencies
+      - name: Node version
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
+
+      - name: Install Dependencies
         run: npm ci
 
       - name: ESLint PR Check
