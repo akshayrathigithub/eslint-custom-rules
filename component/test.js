@@ -7,6 +7,11 @@ function CurrentBalance () {
     <div className="balances-container">
       <div className="bal-cont-header">
         <div className="balances-lhs-container">
+        <Amount
+        value={Math.abs(balance)}
+        currency="INR"
+        className={balance < 0 ? 'negative-balance' : ''}
+      />
           <div className="balance-type-container">
             <p>Current Balance</p>
           </div>
@@ -20,17 +25,6 @@ function CurrentBalance () {
           </div>
         </div>
       </div>
-      <Amount
-        value={Math.abs(balance)}
-        currency="INR"
-        className={balance < 0 ? 'negative-balance' : ''}
-      />
-
-<Amount
-        value={Math.abs(balance)}
-        currency="INR"
-        className={balance < 0 ? 'negative-balance' : ''}
-      />
     </div>
   )
 }

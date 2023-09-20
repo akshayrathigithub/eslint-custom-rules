@@ -22,11 +22,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use Node v18.12.1
-        uses: actions/setup-node@v1
-        with:
-          node-version: 18.12.1
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v9.3
@@ -34,13 +29,19 @@ jobs:
           files: |
             .(js|json|jsx|ts|tsx)$
 
-      - name: Get branch names
-        id: branch-name
-        uses: tj-actions/branch-names@v5
+      - name: Node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+
+      - name: Install Dependencies
+        run: npm ci --unsafe-perm --prefer-offline
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
 
       - name: ESLint PR Check
         run: |
-          npx eslint \
+          eslint \
           --output-file eslint_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
