@@ -7,7 +7,7 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     continue-on-error: false
     name: Validate
     steps:
