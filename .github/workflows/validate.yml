@@ -35,7 +35,7 @@ jobs:
           node-version: 18.12.1
 
       - name: Install Dependencies
-        run: npm ci --unsafe-perm --prefer-offline
+        run: npm ci
         env:
           TOKEN: ${{ secrets.TOKEN }}
 
