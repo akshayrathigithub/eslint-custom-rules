@@ -34,8 +34,8 @@ jobs:
           files: |
             .(js|json|jsx|ts|tsx)$
 
-      - name: Setup eslint
-        run: npm install -g eslint@8.49.0
+      - name: Install dependencies
+        run: npm install
 
       - name: ESLint PR Check
         run: |
