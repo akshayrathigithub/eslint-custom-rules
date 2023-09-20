@@ -19,15 +19,27 @@ jobs:
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Use Node v18.12.1
         uses: actions/setup-node@v1
         with:
           node-version: 18.12.1
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v9.3
+        with:
+          files: |
+            .(js|json|jsx|ts|tsx)$
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v5
+
       - name: ESLint PR Check
         run: |
-          echo 'PR Branch: ${{ steps.branch-name.outputs.current_branch }}'
           npx eslint \
           --output-file eslint_report.json \
           --no-error-on-unmatched-pattern \
