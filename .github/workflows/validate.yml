@@ -35,11 +35,11 @@ jobs:
             .(js|json|jsx|ts|tsx)$
 
       - name: Install dependencies
-        run: npm ci
+        run: npm run build
 
       - name: ESLint PR Check
         run: |
-          npx eslint \
+          eslint \
           --output-file eslint_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
