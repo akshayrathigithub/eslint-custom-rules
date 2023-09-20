@@ -35,6 +35,7 @@ jobs:
           node-version: 18.12.1
 
       - name: Install Dependencies
+        run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
 
