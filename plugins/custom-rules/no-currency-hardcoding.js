@@ -9,7 +9,7 @@ module.exports = {
     return {
       JSXOpeningElement (node) {
         const componentName = node.name.name
-        console.log(componentName, "componentName")
+
         if (componentName === 'Amount') {
           const currencyAttribute = node.attributes.find(
             (attr) =>

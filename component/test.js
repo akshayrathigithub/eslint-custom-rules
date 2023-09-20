@@ -20,6 +20,17 @@ function CurrentBalance () {
           </div>
         </div>
       </div>
+      <Amount
+        value={Math.abs(balance)}
+        currency="INR"
+        className={balance < 0 ? 'negative-balance' : ''}
+      />
+
+<Amount
+        value={Math.abs(balance)}
+        currency="INR"
+        className={balance < 0 ? 'negative-balance' : ''}
+      />
     </div>
   )
 }
