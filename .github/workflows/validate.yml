@@ -22,11 +22,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use Node v18.12.1
-        uses: actions/setup-node@v1
-        with:
-          node-version: 18.12.1
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v9.3
@@ -34,8 +29,11 @@ jobs:
           files: |
             .(js|json|jsx|ts|tsx)$
 
-      - name: Install dependencies
-        run: npm run build
+      - name: Dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+        run: npm ci
 
       - name: ESLint PR Check
         run: |
