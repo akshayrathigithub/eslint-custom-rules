@@ -45,7 +45,7 @@ jobs:
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: (.messages | map(select(.ruleId | contains("custom-rules/"))), errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
 
       - name: Log Filtered ESLint Report
         run: cat errors_report.json
