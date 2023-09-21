@@ -54,10 +54,8 @@ jobs:
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
-          # Read the content of eslint_report.json
-          report_contents=$(cat eslint_report.json)
-          echo "$report_contents"
 
+          report_contents=$(cat eslint_report.json)
           error_found=false
           for obj in $(echo "$report_contents" | jq -c '.[]'); do
             errorCount=$(echo "$obj" | jq -r '.errorCount')
