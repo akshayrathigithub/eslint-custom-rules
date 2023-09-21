@@ -46,10 +46,13 @@ jobs:
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
+      - name: Log Filtered ESLint Report
+        run: cat eslint_report.json
+
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > filtered_eslint_report.json
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > eslint_report.json
 
       - name: List Files
         run: ls -la
@@ -57,12 +60,12 @@ jobs:
       - name: Log Filtered ESLint Report
         run: cat eslint_report.json
 
-      - name: Log Filtered ESLint Report
-        run: cat filtered_eslint_report.json
+      # - name: Log Filtered ESLint Report
+      #   run: cat filtered_eslint_report.json
 
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
         id: eslint-annotator
         with:
-          report-json: "filtered_eslint_report.json"
+          report-json: "eslint_report.json"
           check-name: "Eslint Report"
