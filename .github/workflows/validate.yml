@@ -70,70 +70,70 @@ jobs:
           fi
         shell: bash
 
-slackNotification:
-    name: Slack Notification
-    runs-on: ubuntu-latest
-    needs: linter
-    if: steps.linter.outputs.has_errors == 'true'
-    steps:
+  slackNotification:
+      name: Slack Notification
+      runs-on: ubuntu-latest
+      needs: linter
+      if: steps.linter.outputs.has_errors == 'true'
+      steps:
 
-    - name: Send a slack alert to I18N team
-      id: slack
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        # For posting a rich message using Block Kit
-        payload: |
-          {
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":error: *Urgent Alert!* :error:"
+      - name: Send a slack alert to I18N team
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":error: *Urgent Alert!* :error:"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":exclamation: *Pull Request:* ${{ github.event.pull_request.title }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":bust_in_silhouette: *Author:* *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":construction: *Status:* Open"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":fire: *Message:*\n ${{ needs.file_changes.outputs.total_error }} errors has been found, requesting a review from @internationalization-fe"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":link: *PR URL:* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}>"
+                  }
                 }
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":exclamation: *Pull Request:* ${{ github.event.pull_request.title }}"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":bust_in_silhouette: *Author:* *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":construction: *Status:* Open"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":fire: *Message:*\n ${{ needs.file_changes.outputs.total_error }} errors has been found, requesting a review from @internationalization-fe"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":link: *PR URL:* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}>"
-                }
-              }
-            ]
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
 
