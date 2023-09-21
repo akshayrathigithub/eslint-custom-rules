@@ -54,8 +54,16 @@ jobs:
           # Read the content of eslint_report.json
           report_contents=$(cat eslint_report.json)
 
-          # Check if the report_contents contain any errors
-          if [[ $report_contents == *"errorCount\": 0"* ]]; then
+          error_found=false
+          for obj in $(echo "$report_contents" | jq -c '.[]'); do
+            errorCount=$(echo "$obj" | jq -r '.errorCount')
+            if [ "$errorCount" -gt 0 ]; then
+              error_found=true
+            fi
+          done
+
+          # Check if error was found and take further action if needed
+          if [ "$error_found" = true ]; then
             echo "No ESLint errors found in filtered report."
             echo "hardcoding_found=false" >> $GITHUB_OUTPUT
           else
