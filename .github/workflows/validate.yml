@@ -7,54 +7,44 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  validate:
+  build:
+
     runs-on: ubuntu-latest
-    continue-on-error: false
-    name: Validate
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-      - name: Checkout Codebase
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm i
+    - run: npm run build
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v9.3
-        with:
-          files: |
-            .(js|json|jsx|ts|tsx)$
+      # - name: Install Dependencies
+      #   run: npm ci
+      #   env:
+      #     NPM_RAZORPAY_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     GITHUB_ACCESS_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Node version
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - run: npm i
-      # - run: npm run build
+      # - name: ESLint PR Check
+      #   run: |
+      #     eslint \
+      #     --output-file eslint_report.json \
+      #     --no-error-on-unmatched-pattern \
+      #     --format json \
+      #     ${{ steps.changed-files.outputs.all_modified_files }}
+      #   continue-on-error: true
 
-      - name: Install Dependencies
-        run: npm ci
-        env:
-          NPM_RAZORPAY_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_ACCESS_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: ESLint PR Check
-        run: |
-          eslint \
-          --output-file eslint_report.json \
-          --no-error-on-unmatched-pattern \
-          --format json \
-          ${{ steps.changed-files.outputs.all_modified_files }}
-        continue-on-error: true
-
-      - name: Annotate ES lint issues
-        uses: ataylorme/eslint-annotate-action@v2
-        id: eslint-annotator
-        with:
-          report-json: "eslint_report.json"
-          check-name: "Eslint Report"
+      # - name: Annotate ES lint issues
+      #   uses: ataylorme/eslint-annotate-action@v2
+      #   id: eslint-annotator
+      #   with:
+      #     report-json: "eslint_report.json"
+      #     check-name: "Eslint Report"
