@@ -62,12 +62,12 @@ jobs:
           fi
 
           report_contents=$(cat eslint_report.json)
-          echo "$report_contents"
 
           # Check if report_contents is non-empty
           if [ -n "$report_contents" ]; then
             error_found=false
             for obj in $(echo "$report_contents" | jq -c '.[]'); do
+              echo "HELLO"
               errorCount=$(echo "$obj" | jq -r '.errorCount')
               if [ "$errorCount" -gt 0 ]; then
                 error_found=true
