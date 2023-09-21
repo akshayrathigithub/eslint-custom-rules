@@ -57,8 +57,8 @@ jobs:
       - name: Check ESLint Report for Errors
         id: eslint-check
         run: |
-          # Read the content of filtered_eslint_report.json
-          report_contents=$(cat filtered_eslint_report.json)
+          # Read the content of eslint_report.json
+          report_contents=$(cat eslint_report.json)
 
           # Check if the report_contents contain any errors
           if [[ $report_contents == *"errorCount\": 0"* ]]; then
