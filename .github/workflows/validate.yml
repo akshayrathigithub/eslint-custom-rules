@@ -51,17 +51,6 @@ jobs:
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
-
-          # # Check if the report_contents contain any errors
-          # if [[ $report_contents == *"errorCount\": 0"* ]]; then
-          #   echo "No ESLint errors found in filtered report."
-          #   echo "hardcoding_found=false" >> $GITHUB_OUTPUT
-          # else
-          #   echo "ESLint errors found in filtered report."
-          #   echo "hardcoding_found=true" >> $GITHUB_OUTPUT
-          # fi
-
-
           # Specify the path to your JSON file
           json_file="eslint_report.json"
 
@@ -92,6 +81,7 @@ jobs:
             fi
           else
             echo "report_contents is empty. No processing performed."
+            exit 0
           fi
 
         shell: bash
