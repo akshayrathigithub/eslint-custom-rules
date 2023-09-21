@@ -67,12 +67,12 @@ jobs:
           # Check if report_contents is non-empty
           if [ -n "$report_contents" ]; then
             error_found=false
-            # for obj in $(echo "$report_contents" | jq -c '.[]'); do
-            #   errorCount=$(echo "$obj" | jq -r '.errorCount')
-            #   if [ "$errorCount" -gt 0 ]; then
-            #     error_found=true
-            #     echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
-            #   fi
+            for obj in $(echo "$report_contents" | jq -c '.[]'); do
+              errorCount=$(echo "$obj" | jq -r '.errorCount')
+              if [ "$errorCount" -gt 0 ]; then
+                error_found=true
+                echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
+              fi
             done
 
             # Check if error was found and take further action if needed
