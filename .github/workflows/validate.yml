@@ -46,14 +46,6 @@ jobs:
           # Use jq to filter ESLint errors by 'ruleId'
           jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
 
-      - name: Annotate ES lint issues
-        uses: ataylorme/eslint-annotate-action@v2
-        id: eslint-annotator
-        with:
-          report-json: "eslint_report.json"
-          check-name: "Eslint Report"
-        continue-on-error: true
-
       - name: Check ESLint Report for Errors
         id: eslint-check
         run: |
@@ -69,6 +61,13 @@ jobs:
             echo "::set-output name=has_errors::true"
           fi
         shell: bash
+
+      - name: Annotate ES lint issues
+        uses: ataylorme/eslint-annotate-action@v2
+        id: eslint-annotator
+        with:
+          report-json: "eslint_report.json"
+          check-name: "Eslint Report"
 
   slackNotification:
     name: Slack Notification
