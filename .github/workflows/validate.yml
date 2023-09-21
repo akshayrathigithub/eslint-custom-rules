@@ -62,6 +62,9 @@ jobs:
       #     // Save the filtered report
       #     fs.writeFileSync('filtered_eslint_report.json', JSON.stringify(filteredReport, null, 2));
 
+      - name: List Files
+        run: ls -la
+
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
