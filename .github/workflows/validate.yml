@@ -54,6 +54,12 @@ jobs:
       - name: List Files
         run: ls -la
 
+      - name: Log Filtered ESLint Report
+        run: cat eslint_report.json
+
+      - name: Log Filtered ESLint Report
+        run: cat filtered_eslint_report.json
+
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
         id: eslint-annotator
