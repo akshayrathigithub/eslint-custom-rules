@@ -62,6 +62,30 @@ jobs:
             echo "ESLint errors found in filtered report."
             echo "hardcoding_found=true" >> $GITHUB_OUTPUT
           fi
+
+          # # Check if the report_contents contain any errors
+          # if [[ $report_contents == *"errorCount\": 0"* ]]; then
+          #   echo "No ESLint errors found in filtered report."
+          #   echo "hardcoding_found=false" >> $GITHUB_OUTPUT
+          # else
+          #   echo "ESLint errors found in filtered report."
+          #   echo "hardcoding_found=true" >> $GITHUB_OUTPUT
+          # fi
+
+          error_found=false
+          for obj in $(echo "$report_contents" | jq -c '.[]'); do
+            errorCount=$(echo "$obj" | jq -r '.errorCount')
+            if [ "$errorCount" -gt 0 ]; then
+              error_found=true
+              echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
+            fi
+          done
+
+          # Check if error was found and take further action if needed
+          if [ "$error_found" = true ]; then
+            echo "Errors were found in at least one object."
+            # You can add additional actions or commands here
+          fi
         shell: bash
 
       - name: Annotate ES lint issues
