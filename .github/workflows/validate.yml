@@ -1,4 +1,4 @@
-name: Validate Workflow
+name: I18n Linter
 on:
   push:
     branches:
@@ -7,15 +7,12 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  validate:
+  linter:
     runs-on: ubuntu-latest
-    continue-on-error: false
-    name: Validate
+    name: I18n Linter
+    outputs:
+      has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v2
@@ -37,19 +34,35 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: ESLint PR Check
+      - name: Custom Rules Check
         run: |
           npx eslint \
-          --output-file eslint_report.json \
+          --output-file errors_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
-      - name: Filter ESLint Errors
+      - name: Filter I18n Errors
         run: |
-          # Use jq to filter ESLint errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > filtered_eslint_report.json
+          # Use jq to filter i18n errors by 'ruleId'
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
+
+      - name: Check ESLint Report for i18n Errors
+        id: linter-check
+        run: |
+          # Read the content of eslint_report.json
+          report_contents=$(cat eslint_report.json)
+
+          # Check if the report_contents contain any errors
+          if [[ $report_contents == *"errorCount\": 0"* ]]; then
+            echo "No ESLint errors found in filtered report."
+            echo "hardcoding_found=false" >> $GITHUB_OUTPUT
+          else
+            echo "ESLint errors found in filtered report."
+            echo "hardcoding_found=true" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
 
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
@@ -57,3 +70,68 @@ jobs:
         with:
           report-json: "eslint_report.json"
           check-name: "Eslint Report"
+
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    needs: linter
+    if: failure() && needs.linter.outputs.has_error == 'true'
+    steps:
+      - name: Send a slack alert to I18N team
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":error: *Urgent Alert!* :error:"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":exclamation: *Pull Request:* ${{ github.event.pull_request.title }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":bust_in_silhouette: *Author:* *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":construction: *Status:* Open"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":fire: *Message:*\n Some errors has been found, requesting a review from @internationalization-fe"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":link: *PR URL:* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
