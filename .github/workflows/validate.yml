@@ -52,6 +52,7 @@ jobs:
         with:
           report-json: "eslint_report.json"
           check-name: "Eslint Report"
+        continue-on-error: true
 
       - name: Check ESLint Report for Errors
         id: eslint-check
