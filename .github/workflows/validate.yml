@@ -67,8 +67,9 @@ jobs:
           if [ -n "$report_contents" ]; then
             error_found=false
             for obj in $(echo "$report_contents" | jq -c '.[]'); do
+              echo "HELL $obj"
               errorCount=$(echo "$obj" | jq -r '.errorCount')
-              echo "HELLO $errorCount"
+              echo "HELLO $errorCount $obj"
               if [ "$errorCount" -gt 0 ]; then
                 error_found=true
                 echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
