@@ -51,6 +51,8 @@ jobs:
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
+          report_contents=$(cat eslint_report.json)
+          echo "$report_contents"
           # Specify the path to your JSON file
           json_file="eslint_report.json"
 
@@ -83,7 +85,6 @@ jobs:
             echo "report_contents is empty. No processing performed."
             exit 0
           fi
-
         shell: bash
 
       - name: Annotate ES lint issues
