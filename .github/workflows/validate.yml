@@ -40,28 +40,22 @@ jobs:
       - name: ESLint PR Check
         run: |
           npx eslint \
-          --output-file eslint_report.json \
+          --output-file errors_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
-      - name: Log Filtered ESLint Report
-        run: cat eslint_report.json
-
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > eslint_report.json
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' errors_report.json > eslint_report.json
 
-      - name: List Files
-        run: ls -la
+      - name: Log Filtered ESLint Report
+        run: cat errors_report.json
 
       - name: Log Filtered ESLint Report
         run: cat eslint_report.json
-
-      # - name: Log Filtered ESLint Report
-      #   run: cat filtered_eslint_report.json
 
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
