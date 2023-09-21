@@ -39,12 +39,17 @@ jobs:
 
       - name: ESLint PR Check
         run: |
-          npm run eslint \
+          npx eslint \
           --output-file eslint_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
+
+      - name: Filter ESLint Errors
+        run: |
+          # Use jq to filter ESLint errors by 'ruleId'
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > filtered_eslint_report.json
 
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
