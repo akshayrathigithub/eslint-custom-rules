@@ -51,9 +51,12 @@ jobs:
           # Use jq to filter ESLint errors by 'ruleId'
           jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' eslint_report.json > filtered_eslint_report.json
 
+      - name: List Files
+        run: ls -la
+
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
         id: eslint-annotator
         with:
-          report-json: "eslint_report.json"
+          report-json: "filtered_eslint_report.json"
           check-name: "Eslint Report"
