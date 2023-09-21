@@ -66,12 +66,24 @@ jobs:
           # Check if report_contents is non-empty
           if [ -n "$report_contents" ]; then
             error_found=false
-            for obj in $(echo "$report_contents" | jq -c '.[]'); do
-              errorCount=0
-              if [ "$errorCount" -gt 0 ]; then
-                error_found=true
-              fi
-              echo "$obj HELL"
+            
+            # for obj in $(echo "$report_contents" | jq -r '.[] | @base64'); do
+            #   errorCount=0
+            #   _jq() {
+            #   echo ${row} | base64 --decode | jq -r ${1}
+            #   }
+            #   echo $(_jq '.name')
+            #   if [ "$errorCount" -gt 0 ]; then
+            #     error_found=true
+            #   fi
+            #   echo "$obj HELL"
+            # done
+
+            for row in $(echo "${report_contents}" | jq -r '.[] | @base64'); do
+              _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+              }
+              echo $(_jq '.errorCount')
             done
 
             # Check if error was found and take further action if needed
