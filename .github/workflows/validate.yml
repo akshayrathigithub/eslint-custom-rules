@@ -7,10 +7,6 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -49,7 +45,7 @@ jobs:
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))]}]' errors_report.json > eslint_report.json
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | length)}]' errors_report.json > eslint_report.json
 
       - name: Log Filtered ESLint Report
         run: cat errors_report.json
