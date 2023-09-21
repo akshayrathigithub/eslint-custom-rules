@@ -39,7 +39,7 @@ jobs:
 
       - name: ESLint PR Check
         run: |
-          npx eslint --rulesdir custom-rules/ index.js \
+          npx eslint \
           --output-file eslint_report.json \
           --no-error-on-unmatched-pattern \
           --format json \
