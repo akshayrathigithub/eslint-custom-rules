@@ -52,29 +52,38 @@ jobs:
         id: linter-check
         run: |
 
+          # Specify the path to your JSON file
+          json_file="eslint_report.json"
+
+          # Check if the JSON file exists
+          if [ ! -f "$json_file" ]; then
+            echo "JSON file '$json_file' does not exist."
+            exit 1
+          fi
+
           report_contents=$(cat eslint_report.json)
           echo "$report_contents"
 
           # Check if report_contents is non-empty
-          # if [ -n "$report_contents" ]; then
-          #   error_found=false
-          #   for obj in $(echo "$report_contents" | jq -c '.[]'); do
-          #     errorCount=$(echo "$obj" | jq -r '.errorCount')
-          #     if [ "$errorCount" -gt 0 ]; then
-          #       error_found=true
-          #       echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
-          #     fi
-          #   done
+          if [ -n "$report_contents" ]; then
+            error_found=false
+            # for obj in $(echo "$report_contents" | jq -c '.[]'); do
+            #   errorCount=$(echo "$obj" | jq -r '.errorCount')
+            #   if [ "$errorCount" -gt 0 ]; then
+            #     error_found=true
+            #     echo "Error found in: $(echo "$obj" | jq -r '.filePath')"
+            #   fi
+            done
 
-          #   # Check if error was found and take further action if needed
-          #   if [ "$error_found" = true ]; then
-          #     echo "Errors were found in at least one object."
-          #     # You can add additional actions or commands here
-          #   fi
-          # else
-          #   echo "report_contents is empty. No processing performed."
-          #   exit 0
-          # fi
+            # Check if error was found and take further action if needed
+            if [ "$error_found" = true ]; then
+              echo "Errors were found in at least one object."
+              # You can add additional actions or commands here
+            fi
+          else
+            echo "report_contents is empty. No processing performed."
+            exit 0
+          fi
         shell: bash
 
       - name: Annotate ES lint issues
