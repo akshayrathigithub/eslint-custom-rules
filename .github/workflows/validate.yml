@@ -46,25 +46,6 @@ jobs:
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
-      # - name: Filter ESLint Errors
-      #   run: |
-      #     const fs = require('fs');
-
-      #     // Read the ESLint report
-      #     const eslintReport = JSON.parse(fs.readFileSync('eslint_report.json', 'utf8'));
-
-      #     // Filter errors with 'ruleId' containing "custom-rules/"
-      #     const filteredReport = eslintReport.map(file => {
-      #       file.messages = file.messages.filter(message => message.ruleId.includes('custom-rules/'));
-      #       return file;
-      #     });
-
-      #     // Save the filtered report
-      #     fs.writeFileSync('filtered_eslint_report.json', JSON.stringify(filteredReport, null, 2));
-
-      - name: List Files
-        run: ls -la
-
       - name: Filter ESLint Errors
         run: |
           # Use jq to filter ESLint errors by 'ruleId'
