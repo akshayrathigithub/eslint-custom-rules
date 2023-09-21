@@ -32,7 +32,10 @@ jobs:
       - name: Node version
         uses: actions/setup-node@v3
         with:
-          node-version: 18.12.1
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm i
+      # - run: npm run build
 
       - name: Install Dependencies
         run: npm ci
