@@ -48,11 +48,15 @@ jobs:
           # Use jq to filter i18n errors by 'ruleId'
           jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
 
+      - name: Print Content
+        run: cat eslint_report.json
+
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
           # Read the content of eslint_report.json
           report_contents=$(cat eslint_report.json)
+          echo "$report_contents"
 
           error_found=false
           for obj in $(echo "$report_contents" | jq -c '.[]'); do
