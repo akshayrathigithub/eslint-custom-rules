@@ -9,12 +9,7 @@ function CurrentBalance() {
           <div className="balance-type-container">
             <p>Current Balance</p>
           </div>
-          <div className="balance-amount-container">
-            {currency === 'INR' && <p>Current Balance</p>}
-          </div>
-          <div className="balance-amount-container">
-            {currency === 'INR' && <p>Current Balance</p>}
-          </div>
+          {currency === 'INR' && <p>Current Balance</p>}
         </div>
       </div>
     </div>
