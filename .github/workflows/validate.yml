@@ -73,7 +73,7 @@ jobs:
     name: Slack Notification
     runs-on: ubuntu-latest
     needs: linter
-    if: failure() && steps.linter.outputs.has_errors == 'true'
+    if: failure() && needs.linter.outputs.has_errors == 'true'
     steps:
       - name: Send a slack alert to I18N team
         id: slack
