@@ -1,7 +1,6 @@
 import React from 'react';
 
 function CurrentBalance() {
-  const currency = 'MYR';
   return (
     <div className="balances-container">
       <div className="bal-cont-header">
@@ -10,7 +9,6 @@ function CurrentBalance() {
             <p>Current Balance</p>
           </div>
         </div>
-        {currency === 'INR' && <p>Current Balance</p>}
       </div>
     </div>
   );
