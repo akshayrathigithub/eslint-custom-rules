@@ -10,6 +10,7 @@ function CurrentBalance() {
           </div>
         </div>
       </div>
+      {currency === 'INR' && <p>Current Balance</p>}
     </div>
   );
 }
