@@ -1,11 +1,9 @@
-import React from 'react'
-import Amount from 'common/ui/Amount';
-
-function CurrentBalance () {
-  const balance = 40
+/* eslint-disable react/react-in-jsx-scope */
+function CurrentBalance() {
+  const balance = 40;
   return (
     <div className="balances-container">
-                  <Amount
+      <Amount
         value={Math.abs(balance)}
         currency="INR"
         className={balance < 0 ? 'negative-balance' : ''}
@@ -21,7 +19,7 @@ function CurrentBalance () {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default CurrentBalance
+export default CurrentBalance;

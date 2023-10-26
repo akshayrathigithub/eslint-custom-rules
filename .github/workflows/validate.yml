@@ -24,7 +24,7 @@ jobs:
         uses: tj-actions/changed-files@v9.3
         with:
           files: |
-            .(js|json|jsx|ts|tsx)$
+            .(js|jsx|ts|tsx)$
 
       - name: Node version
         uses: actions/setup-node@v3
@@ -51,6 +51,17 @@ jobs:
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
+
+          # Specify the path to your JSON file
+          json_file="eslint_report.json"
+
+          # Check if the JSON file exists
+          if [ ! -f "$json_file" ]; then
+            echo "JSON file '$json_file' does not exist."
+            exit 0
+          fi
+
+          report_contents=$(cat eslint_report.json)
 
           # Specify the path to your JSON file
           json_file="eslint_report.json"
@@ -156,6 +167,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        # env:
+        #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        #   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
