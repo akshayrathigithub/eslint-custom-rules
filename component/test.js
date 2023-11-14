@@ -8,8 +8,13 @@ function CurrentBalance() {
           <div className="balance-type-container">
             <p>Current Balance</p>
           </div>
+          <Amount
+        value={Math.abs(balance)}
+        currency="INR"
+        className={balance < 0 ? 'negative-balance' : ''}
+      />
           <div className="balance-amount-container">
-            {balance < 0 && <p className="negative-marker">-</p>}
+          {currency === 'INR' && <p>Current Balance</p>}
           </div>
         </div>
       </div>
