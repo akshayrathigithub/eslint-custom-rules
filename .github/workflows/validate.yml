@@ -48,7 +48,6 @@ jobs:
         run: |
           report_contents=$(cat eslint_report.json)
           echo "$report_contents"
-        shell: bash
 
       - name: Filter I18n Errors
         run: |
