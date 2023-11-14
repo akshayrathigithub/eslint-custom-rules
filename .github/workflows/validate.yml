@@ -62,17 +62,6 @@ jobs:
           fi
 
           report_contents=$(cat eslint_report.json)
-
-          # Specify the path to your JSON file
-          json_file="eslint_report.json"
-
-          # Check if the JSON file exists
-          if [ ! -f "$json_file" ]; then
-            echo "JSON file '$json_file' does not exist."
-            exit 1
-          fi
-
-          report_contents=$(cat eslint_report.json)
           # Check if report_contents is non-empty
           if [ -n "$report_contents" ]; then
             error_found=false
@@ -168,5 +157,5 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
