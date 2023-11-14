@@ -43,6 +43,13 @@ jobs:
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
+      - name: Testing
+        id: testing
+        run: |
+          report_contents=$(cat eslint_report.json)
+          echo "$report_contents"
+        shell: bash
+
       - name: Filter I18n Errors
         run: |
           # Use jq to filter i18n errors by 'ruleId'
