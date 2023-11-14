@@ -1,6 +1,9 @@
 /* eslint-disable react/react-in-jsx-scope */
+import Amount from 'amount';
+
 function CurrentBalance() {
   const balance = 40;
+  const currency = 'MYR';
   return (
     <div className="balances-container">
       <div className="bal-cont-header">
