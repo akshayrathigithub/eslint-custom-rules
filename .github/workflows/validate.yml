@@ -46,7 +46,7 @@ jobs:
       - name: Testing
         id: testing
         run: |
-          report_contents=$(cat eslint_report.json)
+          report_contents=$(cat errors_report.json)
           echo "$report_contents"
 
       - name: Filter I18n Errors
