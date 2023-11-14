@@ -43,11 +43,6 @@ jobs:
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
 
-      - name: Filter I18n Errors
-        run: |
-          # Use jq to filter i18n errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
-
       - name: Check ESLint Report for i18n Errors
         id: linter-check
         run: |
@@ -62,6 +57,19 @@ jobs:
           fi
 
           report_contents=$(cat eslint_report.json)
+          echo "$report_contents"
+        shell: bash
+
+
+
+      - name: Filter I18n Errors
+        run: |
+          # Use jq to filter i18n errors by 'ruleId'
+          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
+
+      - name: Check ESLint Report for i18n Errors
+        id: linter-check
+        run: |
 
           # Specify the path to your JSON file
           json_file="eslint_report.json"
@@ -168,5 +176,5 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
