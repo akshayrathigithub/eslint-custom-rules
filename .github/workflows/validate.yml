@@ -38,11 +38,11 @@ jobs:
 
           if [ "$ignore_label_found" = true ]; then
             echo "Linter ignore label found, exiting further process gracefully"
-            echo "label_found=true" >> $GITHUB_OUTPUT
+            echo "label_found=true" >> $GITHUB_ENV
             exit 0
           else
             echo "No linter ignore label found, linter will proceed now."
-            echo "label_found=false" >> $GITHUB_OUTPUT
+            echo "label_found=false" >> $GITHUB_ENV
           fi
 
   linter:
