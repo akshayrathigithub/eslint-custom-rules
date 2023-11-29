@@ -27,7 +27,17 @@ jobs:
           github_labels=$(jq --raw-output '.[] .name' <<< '${{ toJson(github.event.pull_request.labels) }}')
           echo "$github_labels"
 
-          if [ "$github_labels" = "ignore-i18n-linter" ]; then
+          ignore_label_found=false
+
+          # Check if the 'ignore-i18n-linter' label is present
+          while IFS= read -r line; do
+            if [ "$line" = "ignore-i18n-linter" ]; then
+              ignore_label_found=true
+              break
+            fi
+          done <<< "$github_labels"
+
+          if [ "$ignore_label_found" = true ]; then
             echo "Linter ignore label found, exiting further process gracefully"
             echo "label_found=true" >> $GITHUB_OUTPUT
             exit 0
