@@ -17,6 +17,7 @@ jobs:
       - name: Check for linter ignore label
         id: check-linter-label
         run: |
+          echo "GitHub event JSON: ${{ toJson(github.event) }}"
           github_labels=$(jq --raw-output '.[] .name' <<< '${{ toJson(github.event.pull_request.labels) }}')
 
           if [ -n "$github_labels" ] && [ "$github_labels" != "ignore-i18n-linter" ]; then
