@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     name: I18n Linter
     needs: verify
-    if: needs.linter.outputs.has_ignore_label == 'false'
+    if: needs.verify.outputs.has_ignore_label == 'false'
     outputs:
       has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
     steps:
