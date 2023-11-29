@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Verify Linter running
     outputs:
-      has_ignore_label: ${{ steps.linter-check.outputs.label_found }}
+      has_ignore_label: ${{ steps.check-linter-label.outputs.label_found }}
     steps:
       - name: Check for linter ignore label
         id: check-linter-label
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     name: I18n Linter
     needs: verify
-    # if: needs.verify.outputs.has_ignore_label == 'false'
+    if: needs.verify.outputs.has_ignore_label == 'false'
     outputs:
       has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
     steps:
