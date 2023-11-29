@@ -23,7 +23,6 @@ jobs:
       - name: Check for linter ignore label
         id: check-linter-label
         run: |
-          echo "GitHub event JSON: ${{ toJson(github.event.pull_request.labels) }}"
           github_labels=$(jq --raw-output '.[] .name' <<< '${{ toJson(github.event.pull_request.labels) }}')
           echo "$github_labels"
 
