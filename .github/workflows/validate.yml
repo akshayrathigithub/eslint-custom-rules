@@ -8,9 +8,31 @@ on:
       - main
 
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+    name: Verify Linter running
+    outputs:
+      has_ignore_label: ${{ steps.linter-check.outputs.label_found }}
+    steps:
+      - name: Check for linter ignore label
+        id: check-linter-label
+        run: |
+          github_labels=$(jq --raw-output .[] .name <<< '${{ toJson(github.event.pull_request.labels) }}')
+
+          if [ "$github_labels" ] && [ "$github_labels" != "ignore-i18n-linter" ]; then
+            echo "Linter ignore label found, exiting further process gracefully"
+            echo "label_found=true" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "No linter ignore label found, linter will proceed now."
+            echo "label_found=false" >> $GITHUB_OUTPUT
+          fi
+
   linter:
     runs-on: ubuntu-latest
     name: I18n Linter
+    needs: verify
+    if: needs.linter.outputs.has_ignore_label == 'false'
     outputs:
       has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
     steps:
@@ -24,7 +46,7 @@ jobs:
         uses: tj-actions/changed-files@v9.3
         with:
           files: |
-            .(js|jsx|ts|tsx)$
+            .(js|jsx|ts|tsx|json)$
 
       - name: Node version
         uses: actions/setup-node@v3
@@ -42,13 +64,6 @@ jobs:
           --format json \
           ${{ steps.changed-files.outputs.all_modified_files }}
         continue-on-error: true
-
-      - name: Testing
-        id: testing
-        run: |
-          report_contents=$(cat eslint_report.json)
-          echo "$report_contents"
-        shell: bash
 
       - name: Filter I18n Errors
         run: |
@@ -164,5 +179,5 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
