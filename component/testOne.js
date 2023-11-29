@@ -1,4 +1,5 @@
 import React from 'react';
+import Amount from 'amount';
 
 function CurrentBalance() {
   return (
@@ -8,6 +9,11 @@ function CurrentBalance() {
           <div className="balance-type-container">
             <p>Current Balance</p>
           </div>
+          <Amount
+        value={100}
+        currency="INR"
+        className="negative-balance"
+      />
         </div>
       </div>
     </div>

@@ -1,8 +1,17 @@
 name: I18n Linter
 on:
   pull_request:
+    types:
+      [
+        edited,
+        opened,
+        synchronize,
+        reopened,
+        assigned,
+        labeled,
+      ]
     branches:
-      - master
+      - main
 
 jobs:
   verify:
@@ -14,10 +23,21 @@ jobs:
       - name: Check for linter ignore label
         id: check-linter-label
         run: |
-          echo "GitHub event JSON: ${{ toJson(github.event.pull_request) }}"
+          echo "GitHub event JSON: ${{ toJson(github.event.pull_request.labels) }}"
           github_labels=$(jq --raw-output '.[] .name' <<< '${{ toJson(github.event.pull_request.labels) }}')
+          echo "$github_labels"
 
-          if [ -n "$github_labels" ] && [ "$github_labels" != "ignore-i18n-linter" ]; then
+          ignore_label_found=false
+
+          # Check if the 'ignore-i18n-linter' label is present
+          while IFS= read -r line; do
+            if [ "$line" = "ignore-i18n-linter" ]; then
+              ignore_label_found=true
+              break
+            fi
+          done <<< "$github_labels"
+
+          if [ "$ignore_label_found" = true ]; then
             echo "Linter ignore label found, exiting further process gracefully"
             echo "label_found=true" >> $GITHUB_OUTPUT
             exit 0
@@ -30,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     name: I18n Linter
     needs: verify
-    if: needs.linter.outputs.has_ignore_label == 'false'
+    if: needs.verify.outputs.has_ignore_label == 'false'
     outputs:
       has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
     steps:
