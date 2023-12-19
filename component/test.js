@@ -1,6 +1,5 @@
 /* eslint-disable react/react-in-jsx-scope */
 function CurrentBalance() {
-  const balance = 40;
   return (
     <div className="balances-container">
       <div className="bal-cont-header">
@@ -9,7 +8,13 @@ function CurrentBalance() {
             <p>Current Balance</p>
           </div>
           <div className="balance-amount-container">
-            {balance < 0 && <p className="negative-marker">-</p>}
+            <a
+              target="_blank"
+              href="https://razorpay.com/support/#request"
+              rel="noreferrer noopener"
+            >
+              contact our support
+            </a>
           </div>
         </div>
       </div>

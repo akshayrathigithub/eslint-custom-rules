@@ -59,11 +59,8 @@ jobs:
         with:
           node-version: 18.12.1
 
-      - name: Setup yarn
-        run: npm install -g yarn
-
       - name: Install Dependencies
-        run: npm ci
+        run: sudo npm ci --unsafe-perm=true --allow-root
 
       - name: I18n Rules Check
         run: |
@@ -163,24 +160,24 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Total Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).totalFoundErrors }}"
+                      "text": "*Total Errors:* ${{ fromJson(needs.linter.outputs.linter_metrics).totalFoundErrors }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Region-Specific Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noRegionSpecificKeywordErrors }}"
+                      "text": "*Region-Specific Errors:* ${{ fromJson(needs.linter.outputs.linter_metrics).noRegionSpecificKeywordErrors }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Href Hardcoding Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noHrefHardcodingErrors }}"
+                      "text": "*Href Hardcoding Errors:* ${{ fromJson(needs.linter.outputs.linter_metrics).noHrefHardcodingErrors }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Currency Hardcoding Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noCurrencyHardcodingErrors }}"
+                      "text": "*Currency Hardcoding Errors:* ${{ fromJson(needs.linter.outputs.linter_metrics).noCurrencyHardcodingErrors }}"
                     }
                   ]
                 }
               ]
             }
         env:
-          # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
