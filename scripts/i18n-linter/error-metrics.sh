@@ -31,13 +31,13 @@ for encoded_entry in $(echo "${i18n_errors}" | jq -r '.[] | @base64'); do
 
         # Increment counters based on ruleId
         case "${ruleId}" in
-        "i18n-rules/no-region-specific-keyword")
+        "custom-rules/no-region-specific-keyword")
             noRegionSpecificKeywordErrors=$((noRegionSpecificKeywordErrors + 1))
             ;;
-        "i18n-rules/no-href-hardcoding")
+        "custom-rules/no-href-hardcoding")
             noHrefHardcodingErrors=$((noHrefHardcodingErrors + 1))
             ;;
-        "i18n-rules/no-currency-hardcoding")
+        "custom-rules/no-currency-hardcoding")
             noCurrencyHardcodingErrors=$((noCurrencyHardcodingErrors + 1))
             ;;
         esac

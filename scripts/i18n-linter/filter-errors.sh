@@ -16,7 +16,7 @@ for error in $(echo "${eslint_errors}" | jq -r '.[] | @base64'); do
     messages=$(echo "${decoded_error}" | jq -r '.messages')
 
     # Filter messages based on the ruleId condition using jq
-    newMessages=$(echo "$messages" | jq 'map(select((.ruleId // "") | contains("i18n-rule")))')
+    newMessages=$(echo "$messages" | jq 'map(select((.ruleId // "") | contains("custom-rules")))')
 
     # If there are filtered messages, create a new error object
     if [ -n "$(echo "${newMessages}" | jq '.')" ] && [ "$(echo "${newMessages}" | jq 'length')" -gt 0 ]; then
