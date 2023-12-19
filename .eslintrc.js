@@ -26,7 +26,8 @@ module.exports = {
     'react',
   ],
   rules: {
-    'custom-rules/no-currency-comparision': 1,
-    'custom-rules/no-currency-hardcoding': 1,
+    'custom-rules/no-region-specific-keyword': 'warn',
+    'custom-rules/no-currency-hardcoding': 'warn',
+    'custom-rules/no-href-hardcoding': 'warn',
   },
 };

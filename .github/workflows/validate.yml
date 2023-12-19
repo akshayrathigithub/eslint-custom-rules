@@ -9,41 +9,29 @@ on:
         reopened,
         assigned,
         labeled,
+        unlabeled
       ]
     branches:
       - main
+env:
+  APP_NAME: eslint-custom-rules
+  HOME: /actions-runner/_work
 
 jobs:
   verify:
     runs-on: ubuntu-latest
-    name: Verify Linter running
+    name: Check Linter Ignore Label
     outputs:
-      has_ignore_label: ${{ steps.linter-check.outputs.label_found }}
+      has_ignore_label: ${{ steps.check-ignore-label.outputs.label_found }}
     steps:
-      - name: Check for linter ignore label
-        id: check-linter-label
-        run: |
-          github_labels=$(jq --raw-output '.[] .name' <<< '${{ toJson(github.event.pull_request.labels) }}')
-          echo "$github_labels"
+      - name: Checkout Codebase
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-          ignore_label_found=false
-
-          # Check if the 'ignore-i18n-linter' label is present
-          while IFS= read -r line; do
-            if [ "$line" = "ignore-i18n-linter" ]; then
-              ignore_label_found=true
-              break
-            fi
-          done <<< "$github_labels"
-
-          if [ "$ignore_label_found" = true ]; then
-            echo "Linter ignore label found, exiting further process gracefully"
-            echo "label_found=true" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "No linter ignore label found, linter will proceed now."
-            echo "label_found=false" >> $GITHUB_OUTPUT
-          fi
+      - name: Check for ignore-i18n-linter label
+        id: check-ignore-label
+        run: ./scripts/i18n-linter/check-label.sh
 
   linter:
     runs-on: ubuntu-latest
@@ -52,6 +40,7 @@ jobs:
     if: needs.verify.outputs.has_ignore_label == 'false'
     outputs:
       has_error: ${{ steps.linter-check.outputs.hardcoding_found }}
+      linter_metrics: ${{ steps.linter-metrics.outputs.i18n_errors_metrics }}
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v2
@@ -63,17 +52,20 @@ jobs:
         uses: tj-actions/changed-files@v9.3
         with:
           files: |
-            .(js|jsx|ts|tsx|json)$
+            .(js|jsx|ts|tsx)$
 
       - name: Node version
         uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
 
+      - name: Setup yarn
+        run: npm install -g yarn
+
       - name: Install Dependencies
         run: npm ci
 
-      - name: Custom Rules Check
+      - name: I18n Rules Check
         run: |
           npx eslint \
           --output-file errors_report.json \
@@ -83,49 +75,15 @@ jobs:
         continue-on-error: true
 
       - name: Filter I18n Errors
-        run: |
-          # Use jq to filter i18n errors by 'ruleId'
-          jq '[.[] | {filePath: .filePath, messages: [.messages[] | select(.ruleId | contains("custom-rules/"))], errorCount: (.messages | map(select(.ruleId | contains("custom-rules/"))) | length)}]' errors_report.json > eslint_report.json
+        run: ./scripts/i18n-linter/filter-errors.sh
 
       - name: Check ESLint Report for i18n Errors
         id: linter-check
-        run: |
+        run: ./scripts/i18n-linter/check-errors.sh
 
-          # Specify the path to your JSON file
-          json_file="eslint_report.json"
-
-          # Check if the JSON file exists
-          if [ ! -f "$json_file" ]; then
-            echo "JSON file '$json_file' does not exist."
-            exit 0
-          fi
-
-          report_contents=$(cat eslint_report.json)
-          # Check if report_contents is non-empty
-          if [ -n "$report_contents" ]; then
-            error_found=false
-
-            for obj in $(echo "${report_contents}" | jq -r '.[] | @base64'); do
-              _jq() {
-              echo ${obj} | base64 --decode | jq -r ${1}
-              }
-              errorCount=$(echo $(_jq '.errorCount'))
-              if [ "$errorCount" -gt 0 ]; then
-                error_found=true
-              fi
-            done
-
-            # Check if error was found and take further action if needed
-            if [ "$error_found" = true ]; then
-              echo "I18n errors detected."
-              echo "hardcoding_found=true" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "No i18n errors found empty. No processing performed."
-            echo "hardcoding_found=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-        shell: bash
+      - name: Calculate i18n Linter Metrics
+        id: linter-metrics
+        run: ./scripts/i18n-linter/error-metrics.sh
 
       - name: Annotate ES lint issues
         uses: ataylorme/eslint-annotate-action@v2
@@ -152,7 +110,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":error: *Urgent Alert!* :error:"
+                    "text": ":error: *I18n Violations!* :error:"
                   }
                 },
                 {
@@ -192,6 +150,34 @@ jobs:
                     "type": "mrkdwn",
                     "text": ":link: *PR URL:* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}>"
                   }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*i18n Linter Metrics*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Total Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).totalFoundErrors }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Region-Specific Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noRegionSpecificKeywordErrors }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Href Hardcoding Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noHrefHardcodingErrors }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Currency Hardcoding Errors:*\n${{ fromJson(needs.linter.outputs.linter_metrics).noCurrencyHardcodingErrors }}"
+                    }
+                  ]
                 }
               ]
             }
